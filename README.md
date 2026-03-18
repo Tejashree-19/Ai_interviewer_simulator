@@ -23,5 +23,5 @@ An AI-powered system that simulates real interview scenarios by generating dynam
 
 ## 👥 Contributors
 
-* Your Name
-* Friend Name
+* Tejashree Baddula
+* Monika Pallapu
