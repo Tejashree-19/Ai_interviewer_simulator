@@ -1,12 +1,11 @@
 import os
-from google import genai
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
-)
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+model = genai.GenerativeModel("gemini-pro")
 
 def fallback_question(answer):
 
@@ -38,13 +37,10 @@ def generate_question(answer: str) -> str:
     """
 
     try:
-
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
-        )
-
+        response = model.generate_content(prompt)
         return response.text
+
+    
 
     except Exception:
         return fallback_question(answer)
