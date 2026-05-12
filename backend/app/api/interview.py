@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.services.ai_engine import generate_question
+from backend.app.services.ai_engine import generate_question
 
 router = APIRouter()
 
