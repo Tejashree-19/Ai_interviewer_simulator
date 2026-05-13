@@ -1,13 +1,8 @@
-from backend.app.database import engine
-from backend.app.models import Base
 from fastapi import FastAPI
-from backend.app.api import interview  
+from app.api import interview
+from app.api import session
 
-Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
-app.include_router(interview.router)   
-
-@app.get("/")
-def home():
-    return {"message": "AI Interviewer Running 🚀"}
+app.include_router(interview.router)
+app.include_router(session.router)
