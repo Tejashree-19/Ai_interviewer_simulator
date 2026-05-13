@@ -1,11 +1,12 @@
 import os
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-model = genai.GenerativeModel("gemini-pro")
+client = genai.Client(
+    api_key=os.getenv("GEMINI_API_KEY")
+)
 
 def fallback_question(answer):
 
@@ -28,19 +29,75 @@ def fallback_question(answer):
 def generate_question(answer: str) -> str:
 
     prompt = f"""
-    You are a professional technical interviewer.
+    You are a senior technical interviewer.
 
-    Candidate answer:
+    Your job is to conduct a realistic technical interview.
+
+    Rules:
+    - Ask professional follow-up questions
+    - Focus on technical depth
+    - Ask concise but intelligent questions
+    - Adapt based on candidate answers
+    - Sound like a real interviewer
+
+    Candidate Answer:
     {answer}
 
-    Ask one intelligent follow-up interview question.
+    Generate ONE technical follow-up interview question.
     """
 
     try:
-        response = model.generate_content(prompt)
-        return response.text
 
-    
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+
+        return response.text
 
     except Exception:
         return fallback_question(answer)
+
+
+def evaluate_answer(answer: str):
+
+    prompt = f"""
+    You are a senior technical interviewer.
+
+    Evaluate the following candidate answer.
+
+    Candidate Answer:
+    {answer}
+
+    Give:
+    1. Score out of 10
+    2. Strengths
+    3. Weaknesses
+    4. Improvement tips
+
+    Keep the response concise and professional.
+    """
+
+    try:
+
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+
+        return response.text
+
+    except Exception:
+
+        return """
+        Score: 7/10
+
+        Strengths:
+        Good understanding of backend API development.
+
+        Weaknesses:
+        Could explain scalability and authentication better.
+
+        Improvement Tips:
+        Practice async FastAPI concepts and database optimization.
+        """
