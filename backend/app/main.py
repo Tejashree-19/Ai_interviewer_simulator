@@ -7,8 +7,8 @@ from app.api import answer
 from app.api import evaluate
 
 from fastapi.middleware.cors import CORSMiddleware
-from backend.app.api import interview
-from backend.app.api import session
+from app.api import interview
+from app.api import session
 
 app = FastAPI()
 
