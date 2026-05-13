@@ -25,6 +25,7 @@ class Session(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     role = Column(String)
     started_at = Column(TIMESTAMP, server_default=func.now())
+    question_count = Column(Integer, default=0)
 
     user = relationship("User", back_populates="sessions")
 
