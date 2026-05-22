@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import WebcamMonitor from "../components/WebcamMonitor";
 
 function Interview() {
 
   const [answer, setAnswer] = useState("");
   const [messages, setMessages] = useState([]);
   const [sessionId, setSessionId] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
 
@@ -37,6 +39,8 @@ function Interview() {
 
   const sendAnswer = async () => {
 
+    setLoading(true);
+
     try {
 
       const response = await axios.post(
@@ -56,60 +60,70 @@ function Interview() {
 
       const nextQuestion = response.data.next_question;
 
-      setMessages([
-        ...messages,
-        {
-          type: "user",
-          text: answer,
-        },
-        {
-          type: "ai",
-          text: nextQuestion,
-        },
-      ]);
+	setTimeout(() => {
 
+		setLoading(false);
+
+		setMessages([
+		    ...messages,
+		    {
+		      type: "user",
+		      text: answer,
+		    },
+		    {
+		      type: "ai",
+		      text: nextQuestion,
+		    },
+		  ]);
+
+		  setAnswer("");
+
+	}, 2000);
       setAnswer("");
 
     } catch (error) {
-
       console.log(error);
 
     }
   };
 
   return (
+  <div>
+
+    <WebcamMonitor />
+
+    <h1>Interview Page</h1>
+
     <div>
+      {messages.map((msg, index) => (
+        <div key={index}>
 
-      <h1>Interview Page</h1>
+          <strong>
+            {msg.type === "user" ? "YOU" : "AI"}
+          </strong>
 
-      <div>
-        {messages.map((msg, index) => (
-          <div key={index}>
+          <p>{msg.text}</p>
 
-            <strong>
-              {msg.type === "user" ? "YOU" : "AI"}
-            </strong>
-
-            <p>{msg.text}</p>
-
-          </div>
-        ))}
-      </div>
-
-      <textarea
-        placeholder="Type your answer"
-        value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
-      />
-
-      <br />
-
-      <button onClick={sendAnswer}>
-        Submit
-      </button>
-
+        </div>
+      ))}
     </div>
-  );
+
+    <textarea
+      placeholder="Type your answer"
+      value={answer}
+      onChange={(e) => setAnswer(e.target.value)}
+    />
+
+    <br />
+
+    <button onClick={sendAnswer}>
+      Submit
+    </button>
+
+  </div>
+
+
+);
 }
 
 export default Interview;
