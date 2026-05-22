@@ -33,3 +33,14 @@ def process_answer(data: AnswerRequest):
         "next_question": next_q,
         "interview_complete": False
     }
+
+@router.get("/evaluate")
+def evaluate_interview():
+
+    return {
+        "focus_score": 84,
+        "confidence_score": 79,
+        "communication_score": 88,
+        "overall_feedback":
+        "Strong communication and technical confidence."
+    }
