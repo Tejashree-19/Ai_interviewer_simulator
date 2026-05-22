@@ -12,18 +12,24 @@ def fallback_question(answer):
 
     answer = answer.lower()
 
-    keywords = {
-        "python": "What are decorators in Python?",
-        "sql": "Explain normalization in databases.",
-        "api": "What is REST API?",
-        "react": "What are hooks in React?"
-    }
+    if "python" in answer:
+        return "Explain list comprehension in Python."
 
-    for key in keywords:
-        if key in answer:
-            return keywords[key]
+    elif "api" in answer:
+        return "What are HTTP methods in REST API?"
 
-    return "Can you explain that in more detail?"
+    elif "database" in answer:
+        return "Explain database indexing."
+
+    elif "react" in answer:
+        return "What is useEffect in React?"
+
+    elif "fastapi" in answer:
+        return "Why is FastAPI faster than Flask?"
+
+    else:
+        return "Can you explain your project architecture?"
+
 
 
 def generate_question(answer: str) -> str:
@@ -55,9 +61,9 @@ def generate_question(answer: str) -> str:
 
         return response.text
 
-    except Exception:
-        return fallback_question(answer)
-
+    except Exception as e:
+      print(e)
+      return fallback_question(answer)
 
 def evaluate_answer(answer: str):
 
