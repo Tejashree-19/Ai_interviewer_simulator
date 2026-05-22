@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+
 import WebcamMonitor from "../components/WebcamMonitor";
+import VideoRecorder from "../components/VideoRecorder";
+import VoiceRecorder from "../components/VoiceRecorder";
 
 function Interview() {
 
@@ -10,9 +13,7 @@ function Interview() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-
     createSession();
-
   }, []);
 
   const createSession = async () => {
@@ -24,11 +25,6 @@ function Interview() {
       );
 
       setSessionId(response.data.session_id);
-
-      console.log(
-        "Session Created:",
-        response.data.session_id
-      );
 
     } catch (error) {
 
@@ -51,66 +47,39 @@ function Interview() {
         }
       );
 
-      if (response.data.interview_complete) {
+      const nextQuestion =
+        response.data.next_question;
 
-        alert(response.data.evaluation);
+      setTimeout(() => {
 
-        return;
-      }
+        setLoading(false);
 
-      const nextQuestion = response.data.next_question;
+        setMessages((prev) => [
+          ...prev,
+          {
+            type: "user",
+            text: answer,
+          },
+          {
+            type: "ai",
+            text: nextQuestion,
+          },
+        ]);
 
-	setTimeout(() => {
+        setAnswer("");
 
-		setLoading(false);
-
-		setMessages([
-		    ...messages,
-		    {
-		      type: "user",
-		      text: answer,
-		    },
-		    {
-		      type: "ai",
-		      text: nextQuestion,
-		    },
-		  ]);
-
-		  setAnswer("");
-
-	}, 2000);
-      setAnswer("");
+      }, 2000);
 
     } catch (error) {
+
       console.log(error);
+
+      setLoading(false);
 
     }
   };
 
   return (
-  <div>
-
-    <WebcamMonitor />
-
-    <h1>Interview Page</h1>
-
-    <div>
-      {messages.map((msg, index) => (
-        <div key={index}>
-
-          <strong>
-            {msg.type === "user" ? "YOU" : "AI"}
-          </strong>
-
-          <p>{msg.text}</p>
-import WebcamMonitor from "../components/WebcamMonitor";
-import VideoRecorder from "../components/VideoRecorder";
-import VoiceRecorder from "../components/VoiceRecorder";
-
-function Interview() {
-
-  return (
-
     <div
       style={{
         minHeight: "100vh",
@@ -127,23 +96,10 @@ function Interview() {
         }}
       >
 
-        <h1
-          style={{
-            fontSize: "36px",
-            fontWeight: "bold",
-            marginBottom: "8px",
-          }}
-        >
-          AI Mock Interview
-        </h1>
+        <h1>AI Mock Interview</h1>
 
-        <p
-          style={{
-            color: "#94A3B8",
-            fontSize: "16px",
-          }}
-        >
-          Practice interviews with AI-powered evaluation and live media analysis.
+        <p>
+          Practice interviews with AI-powered evaluation.
         </p>
 
       </div>
@@ -153,7 +109,6 @@ function Interview() {
           display: "flex",
           gap: "25px",
           justifyContent: "center",
-          alignItems: "flex-start",
           flexWrap: "wrap",
         }}
       >
@@ -166,35 +121,80 @@ function Interview() {
 
       <div
         style={{
+          marginTop: "30px",
           display: "flex",
           justifyContent: "center",
-          marginTop: "30px",
         }}
       >
 
         <VoiceRecorder />
 
       </div>
-        </div>
-      ))}
+
+      <div
+        style={{
+          marginTop: "40px",
+          maxWidth: "800px",
+          marginInline: "auto",
+        }}
+      >
+
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            style={{
+              marginBottom: "20px",
+            }}
+          >
+
+            <strong>
+              {msg.type === "user"
+                ? "YOU"
+                : "AI"}
+            </strong>
+
+            <p>{msg.text}</p>
+
+          </div>
+        ))}
+
+        {loading && (
+          <p>
+            AI is analyzing your response...
+          </p>
+        )}
+
+        <textarea
+          placeholder="Type your answer"
+          value={answer}
+          onChange={(e) =>
+            setAnswer(e.target.value)
+          }
+          style={{
+            width: "100%",
+            minHeight: "120px",
+            marginTop: "20px",
+            padding: "16px",
+            borderRadius: "12px",
+          }}
+        />
+
+        <button
+          onClick={sendAnswer}
+          style={{
+            marginTop: "16px",
+            padding: "12px 24px",
+            borderRadius: "10px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Submit
+        </button>
+
+      </div>
+
     </div>
-
-    <textarea
-      placeholder="Type your answer"
-      value={answer}
-      onChange={(e) => setAnswer(e.target.value)}
-    />
-
-    <br />
-
-    <button onClick={sendAnswer}>
-      Submit
-    </button>
-
-  </div>
-
-
-);
   );
 }
 
