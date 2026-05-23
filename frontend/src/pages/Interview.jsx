@@ -25,6 +25,12 @@ function Interview() {
       );
 
       setSessionId(response.data.session_id);
+      setMessages([
+  {
+    type: "ai",
+    text: response.data.question,
+  },
+]);
 
     } catch (error) {
 

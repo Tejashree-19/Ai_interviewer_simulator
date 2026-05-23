@@ -19,4 +19,8 @@ node_modules/
 
 .DS_Store
 
+<<<<<<< HEAD
+=======
+#Webm 
+>>>>>>> af596c9429c84fcd7b119b6ab8c0f357090af56c
 *.webm
