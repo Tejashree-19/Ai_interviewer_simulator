@@ -1,12 +1,27 @@
 import os
-from google import genai
+import random
+import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
 
-client = genai.Client(
-    api_key=os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+genai.configure(api_key=GEMINI_API_KEY)
+
+model = genai.GenerativeModel(
+    "gemini-2.0-flash"
 )
+
+fallback_questions = [
+    "Explain list comprehension in Python.",
+    "What are HTTP methods in REST API?",
+    "Explain database indexing.",
+    "What is useEffect in React?",
+    "Why is FastAPI faster than Flask?",
+    "Can you explain your project architecture?"
+]
+
 
 def fallback_question(answer):
 
@@ -28,8 +43,7 @@ def fallback_question(answer):
         return "Why is FastAPI faster than Flask?"
 
     else:
-        return "Can you explain your project architecture?"
-
+        return random.choice(fallback_questions)
 
 
 def generate_question(answer: str) -> str:
@@ -54,16 +68,18 @@ def generate_question(answer: str) -> str:
 
     try:
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
+        response = model.generate_content(
+            prompt
         )
 
         return response.text
 
     except Exception as e:
-      print(e)
-      return fallback_question(answer)
+
+        print(e)
+
+        return fallback_question(answer)
+
 
 def evaluate_answer(answer: str):
 
@@ -86,14 +102,15 @@ def evaluate_answer(answer: str):
 
     try:
 
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=prompt
+        response = model.generate_content(
+            prompt
         )
 
         return response.text
 
-    except Exception:
+    except Exception as e:
+
+        print(e)
 
         return """
         Score: 7/10
