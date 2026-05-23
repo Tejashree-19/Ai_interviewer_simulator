@@ -1,6 +1,6 @@
 # Python
 
-**pycache**/
+__pycache__/
 *.pyc
 
 # Virtual environment
@@ -18,3 +18,5 @@ node_modules/
 # OS files
 
 .DS_Store
+
+*.webm
