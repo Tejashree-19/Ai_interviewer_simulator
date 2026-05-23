@@ -1,144 +1,86 @@
 import { useEffect, useRef, useState } from "react";
-import * as faceapi from "face-api.js";
 
 function WebcamMonitor() {
-
   const videoRef = useRef(null);
 
-  const [status, setStatus] =
-    useState("Loading AI camera...");
+  const [cameraStatus, setCameraStatus] =
+    useState("Camera Off");
 
-  const [missingTime, setMissingTime] =
-    useState(0);
-
-  const [warning, setWarning] =
+  const [cameraOn, setCameraOn] =
     useState(false);
 
-  useEffect(() => {
-
-    loadModels();
-
-  }, []);
-
-  const loadModels = async () => {
-
-    try {
-
-      await faceapi.nets.tinyFaceDetector.loadFromUri(
-        "/models"
-      );
-
-      startCamera();
-
-    } catch (error) {
-
-      console.log(error);
-
-      setStatus("Failed to load AI models");
-
-    }
-  };
-
   const startCamera = async () => {
-
     try {
-
-      const mediaStream =
+      const stream =
         await navigator.mediaDevices.getUserMedia({
           video: true,
         });
 
       if (videoRef.current) {
-
-        videoRef.current.srcObject =
-          mediaStream;
-
+        videoRef.current.srcObject = stream;
       }
 
-      setStatus("Camera Active");
-
-      detectFace();
+      setCameraStatus("✅ Camera Active");
+      setCameraOn(true);
 
     } catch (error) {
-
       console.log(error);
-
-      setStatus("Camera Access Denied");
-
+      setCameraStatus(
+        "❌ Camera Access Denied"
+      );
     }
   };
 
-  const detectFace = () => {
+  const stopCamera = () => {
+    const stream =
+      videoRef.current.srcObject;
 
-    setInterval(async () => {
+    const tracks = stream.getTracks();
 
-      if (!videoRef.current) return;
+    tracks.forEach((track) =>
+      track.stop()
+    );
 
-      const detections =
-        await faceapi.detectAllFaces(
-          videoRef.current,
-          new faceapi.TinyFaceDetectorOptions()
-        );
+    videoRef.current.srcObject = null;
 
-      if (detections.length === 0) {
+    setCameraStatus("⛔ Camera Off");
 
-        setMissingTime((prev) => prev + 1);
-
-        if (missingTime > 5) {
-
-          setWarning(true);
-
-          setStatus("⚠ Stay Focused");
-
-        } else {
-
-          setStatus("No Face Detected");
-
-        }
-
-      } else if (detections.length > 1) {
-
-        setMissingTime(0);
-
-        setWarning(false);
-
-        setStatus("Multiple Faces Detected");
-
-      } else {
-
-        setMissingTime(0);
-
-        setWarning(false);
-
-        setStatus("Face Detected");
-
-      }
-
-    }, 1000);
+    setCameraOn(false);
   };
 
   return (
-
     <div
       style={{
-        background: "#111827",
+        background: "#1E293B",
         padding: "20px",
-        borderRadius: "16px",
-        width: "340px",
+        borderRadius: "12px",
         color: "white",
+        width: "420px",
+        border: "1px solid #334155",
+        boxShadow:
+          "0 4px 12px rgba(0,0,0,0.25)",
+        textAlign: "center",
       }}
     >
-
-      <h3>AI Camera Monitor</h3>
+      <h2
+        style={{
+          marginBottom: "15px",
+          fontSize: "22px",
+          fontWeight: "bold",
+        }}
+      >
+        AI Camera Monitor
+      </h2>
 
       <video
         ref={videoRef}
         autoPlay
         muted
+        width="380"
+        height="220"
         style={{
-          width: "100%",
-          borderRadius: "12px",
-          marginTop: "12px",
+          borderRadius: "10px",
+          background: "black",
         }}
       />
 
@@ -148,35 +90,40 @@ function WebcamMonitor() {
           fontWeight: "bold",
         }}
       >
-        {status}
+        {cameraStatus}
       </p>
 
-      <p
-        style={{
-          color: "#9CA3AF",
-          fontSize: "14px",
-        }}
-      >
-        Missing Time: {missingTime}s
-      </p>
-
-      {warning && (
-
-        <div
+      {!cameraOn ? (
+        <button
+          onClick={startCamera}
           style={{
-            marginTop: "12px",
-            padding: "10px",
-            background: "#7F1D1D",
-            borderRadius: "10px",
+            background: "#2563EB",
             color: "white",
+            border: "none",
+            padding: "10px 18px",
+            borderRadius: "8px",
+            cursor: "pointer",
             fontWeight: "bold",
           }}
         >
-          ⚠ Please stay focused
-        </div>
-
+          Turn Camera On
+        </button>
+      ) : (
+        <button
+          onClick={stopCamera}
+          style={{
+            background: "#DC2626",
+            color: "white",
+            border: "none",
+            padding: "10px 18px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "bold",
+          }}
+        >
+          Turn Camera Off
+        </button>
       )}
-
     </div>
   );
 }

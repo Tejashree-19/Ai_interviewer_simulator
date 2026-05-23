@@ -95,7 +95,7 @@ try {
         padding: "20px",
         borderRadius: "12px",
         color: "white",
-        width: "380px",
+        width: "420px",
         paddingBottom: "52px",
         border: "1px solid #334155",
         boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
