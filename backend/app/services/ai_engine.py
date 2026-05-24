@@ -74,9 +74,8 @@ def generate_question(answer: str) -> str:
 
         return response.text
 
-    except Exception as e:
+    except Exception:
 
-        print(e)
 
         return fallback_question(answer)
 
@@ -108,9 +107,7 @@ def evaluate_answer(answer: str):
 
         return response.text
 
-    except Exception as e:
-
-        print(e)
+    except Exception:
 
         return """
         Score: 7/10
