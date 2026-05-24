@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function VoiceRecorder() {
+function VoiceRecorder({ setAnswer }) {
 
   const [transcript, setTranscript] =
     useState("");
@@ -35,6 +35,8 @@ function VoiceRecorder() {
     }
 
     setTranscript(currentTranscript);
+
+    setAnswer(currentTranscript.trim());
   };
 
   const startListening = () => {
@@ -145,7 +147,7 @@ function VoiceRecorder() {
 
       )}
 
-      <div
+      {/* <div
         style={{
           marginTop: "18px",
           background:
@@ -166,7 +168,7 @@ function VoiceRecorder() {
         {transcript ||
           "Speech transcript appears here..."}
 
-      </div>
+      </div> */}
 
     </div>
 

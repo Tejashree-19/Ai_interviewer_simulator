@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 import WebcamMonitor from "../components/WebcamMonitor";
 import VoiceRecorder from "../components/VoiceRecorder";
@@ -8,6 +9,75 @@ function Interview() {
 
   const [answer, setAnswer] =
     useState("");
+
+  const [question, setQuestion] =
+    useState("");
+
+  const [sessionId, setSessionId] =
+    useState(null);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  useEffect(() => {
+
+    createSession();
+
+  }, []);
+
+  const createSession = async () => {
+
+    try {
+
+      const response = await axios.post(
+        "https://ai-interviewer-simulator-ot7c.onrender.com/session"
+      );
+
+      setSessionId(
+        response.data.session_id
+      );
+
+      setQuestion(
+        response.data.question
+      );
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+  };
+
+  const submitAnswer = async () => {
+
+    if (!answer.trim()) return;
+
+    setLoading(true);
+
+    try {
+
+      const response = await axios.post(
+        "https://ai-interviewer-simulator-ot7c.onrender.com/answer",
+        {
+          answer: answer,
+          session_id: sessionId,
+        }
+      );
+
+      setQuestion(
+        response.data.next_question
+      );
+
+      setAnswer("");
+
+    } catch (error) {
+
+      console.log(error);
+
+    }
+
+    setLoading(false);
+  };
 
   return (
 
@@ -72,7 +142,8 @@ function Interview() {
         }}
       >
 
-      <VoiceRecorder setAnswer={setAnswer} />
+        <VoiceRecorder setAnswer={setAnswer} />
+
       </div>
 
       <div
@@ -106,7 +177,7 @@ function Interview() {
             marginTop: "10px",
           }}
         >
-          Tell me about yourself.
+          {question || "Loading question..."}
         </p>
 
         <textarea
@@ -129,6 +200,8 @@ function Interview() {
         />
 
         <button
+          onClick={submitAnswer}
+          disabled={loading}
           style={{
             marginTop: "18px",
             padding: "14px 28px",
@@ -141,7 +214,9 @@ function Interview() {
             fontWeight: "bold",
           }}
         >
-          Submit Answer
+          {loading
+            ? "Generating..."
+            : "Submit Answer"}
         </button>
 
       </div>
