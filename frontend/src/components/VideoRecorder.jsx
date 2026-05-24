@@ -1,15 +1,18 @@
 import { useRef, useState } from "react";
-import axios from "axios";
 
 function VideoRecorder() {
 
   const videoRef = useRef(null);
 
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-
-  const [recording, setRecording] = useState(false);
+  const mediaRecorderRef = useRef(null);
 
   const chunksRef = useRef([]);
+
+  const [recording, setRecording] =
+    useState(false);
+
+  const [status, setStatus] =
+    useState("Recorder Idle");
 
   const startRecording = async () => {
 
@@ -21,15 +24,28 @@ function VideoRecorder() {
           audio: true,
         });
 
-      videoRef.current.srcObject = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
 
-      const recorder = new MediaRecorder(stream);
+      const mediaRecorder =
+        new MediaRecorder(stream);
 
-      recorder.ondataavailable = (event) => {
-        chunksRef.current.push(event.data);
+      mediaRecorderRef.current =
+        mediaRecorder;
+
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (
+        event
+      ) => {
+
+        if (event.data.size > 0) {
+          chunksRef.current.push(event.data);
+        }
       };
 
-      recorder.onstop = async () => {
+      mediaRecorder.onstop = () => {
 
         const blob = new Blob(
           chunksRef.current,
@@ -40,150 +56,159 @@ function VideoRecorder() {
 
         const videoURL =
           URL.createObjectURL(blob);
-          const formData = new FormData();
 
-formData.append(
-  "file",
-  blob,
-  "interview-recording.webm"
-);
+        console.log(videoURL);
 
-try {
-
-  const response = await axios.post(
-    "http://127.0.0.1:8000/upload-video",
-    formData
-  );
-
-  console.log(response.data);
-
-} catch (error) {
-
-  console.log(error);
-
-}
-
-        chunksRef.current = [];
+        setStatus(
+          "✅ Recording Saved"
+        );
       };
 
-      recorder.start();
-
-      setMediaRecorder(recorder);
+      mediaRecorder.start();
 
       setRecording(true);
+
+      setStatus(
+        "🎥 Recording in Progress"
+      );
 
     } catch (error) {
 
       console.log(error);
 
+      setStatus(
+        "❌ Camera/Mic Access Denied"
+      );
     }
   };
 
   const stopRecording = () => {
 
-    mediaRecorder.stop();
+    mediaRecorderRef.current.stop();
+
+    const stream =
+      videoRef.current.srcObject;
+
+    const tracks = stream.getTracks();
+
+    tracks.forEach((track) =>
+      track.stop()
+    );
+
+    videoRef.current.srcObject = null;
 
     setRecording(false);
-
   };
 
   return (
 
     <div
       style={{
-        background: "#1E293B",
-        padding: "20px",
-        borderRadius: "12px",
+        width: "340px",
+        padding: "24px",
+        borderRadius: "24px",
+        background:
+          "rgba(30,41,59,0.75)",
+        backdropFilter: "blur(12px)",
+        border:
+          "1px solid rgba(255,255,255,0.08)",
+        boxShadow:
+          "0 8px 32px rgba(0,0,0,0.35)",
         color: "white",
-        width: "420px",
-        paddingBottom: "52px",
-        border: "1px solid #334155",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
       }}
     >
 
       <h2
-  style={{
-    marginBottom: "15px",
-    fontSize: "22px",
-    fontWeight: "bold",
-  }}
->
-  Video Recorder
-</h2>
+        style={{
+          marginBottom: "18px",
+          fontSize: "24px",
+          fontWeight: "bold",
+          background:
+            "linear-gradient(to right, #60A5FA, #A78BFA)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+        }}
+      >
+        AI Video Recorder
+      </h2>
 
       <video
         ref={videoRef}
         autoPlay
         muted
-        width="320"
-        height="220"
+        width="100%"
+        height="240"
         style={{
-          borderRadius: "10px",
+          borderRadius: "16px",
           background: "black",
+          objectFit: "cover",
+          border:
+            "1px solid rgba(255,255,255,0.08)",
+          boxShadow:
+            "0 4px 14px rgba(0,0,0,0.25)",
         }}
       />
 
-    <div
-  style={{
-    marginTop: "15px",
-  }}
->
+      <p
+        style={{
+          marginTop: "16px",
+          marginBottom: "18px",
+          fontWeight: "bold",
+          color: "#CBD5E1",
+        }}
+      >
+        {status}
+      </p>
 
-  {recording && (
-
-    <p
-      style={{
-        color: "#EF4444",
-        fontWeight: "bold",
-        marginBottom: "10px",
-      }}
-    >
-      🔴 Recording...
-    </p>
-
-  )}
-
-  {!recording ? (
+      {!recording ? (
 
         <button
-  onClick={startRecording}
-  style={{
-    background: "#2563EB",
-    color: "white",
-    border: "none",
-    padding: "10px 18px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  }}
->
-  Start Recording
-</button>
+          onClick={startRecording}
+          style={{
+            width: "100%",
+            background:
+              "linear-gradient(to right, #2563EB, #7C3AED)",
+            color: "white",
+            border: "none",
+            padding: "14px",
+            borderRadius: "12px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: "15px",
+            transition: "0.3s",
+            boxShadow:
+              "0 4px 14px rgba(59,130,246,0.4)",
+          }}
+        >
+          Start Recording
+        </button>
 
-        ) : (
+      ) : (
 
         <button
-  onClick={stopRecording}
-  style={{
-    background: "#DC2626",
-    color: "white",
-    border: "none",
-    padding: "10px 18px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  }}
->
-  Stop Recording
-</button>
+          onClick={stopRecording}
+          style={{
+            width: "100%",
+            background:
+              "linear-gradient(to right, #DC2626, #EF4444)",
+            color: "white",
+            border: "none",
+            padding: "14px",
+            borderRadius: "12px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: "15px",
+            transition: "0.3s",
+            boxShadow:
+              "0 4px 14px rgba(220,38,38,0.35)",
+          }}
+        >
+          Stop Recording
+        </button>
 
-        )}
-
-      </div>
+      )}
 
     </div>
-
   );
 }
 

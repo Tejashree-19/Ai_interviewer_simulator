@@ -1,17 +1,34 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
 import Interview from "./pages/Interview";
-import Result from "./pages/Result";
+import Evaluation from "./pages/Evaluation";
 
 function App() {
+
   return (
+
     <BrowserRouter>
+
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/interview" element={<Interview />} />
-        <Route path="/result" element={<Result />} />
+
+        <Route
+          path="/"
+          element={<Interview />}
+        />
+
+        <Route
+          path="/evaluation"
+          element={<Evaluation />}
+        />
+
       </Routes>
+
     </BrowserRouter>
+
   );
 }
 

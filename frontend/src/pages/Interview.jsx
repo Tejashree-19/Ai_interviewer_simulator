@@ -1,121 +1,60 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 
 import WebcamMonitor from "../components/WebcamMonitor";
-import VideoRecorder from "../components/VideoRecorder";
 import VoiceRecorder from "../components/VoiceRecorder";
+import VideoRecorder from "../components/VideoRecorder";
 
 function Interview() {
 
-  const [answer, setAnswer] = useState("");
-  const [messages, setMessages] = useState([]);
-  const [sessionId, setSessionId] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    createSession();
-  }, []);
-
-  const createSession = async () => {
-
-    try {
-
-      const response = await axios.post(
-        "http://127.0.0.1:8000/session"
-      );
-
-      setSessionId(response.data.session_id);
-      setMessages([
-  {
-    type: "ai",
-    text: response.data.question,
-  },
-]);
-
-    } catch (error) {
-
-      console.log(error);
-
-    }
-  };
-
-  const sendAnswer = async () => {
-
-    setLoading(true);
-
-    try {
-
-      const response = await axios.post(
-        "http://127.0.0.1:8000/answer",
-        {
-          answer: answer,
-          session_id: sessionId,
-        }
-      );
-
-      const nextQuestion =
-        response.data.next_question;
-
-      setTimeout(() => {
-
-        setLoading(false);
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            type: "user",
-            text: answer,
-          },
-          {
-            type: "ai",
-            text: nextQuestion,
-          },
-        ]);
-
-        setAnswer("");
-
-      }, 2000);
-
-    } catch (error) {
-
-      console.log(error);
-
-      setLoading(false);
-
-    }
-  };
+  const [answer, setAnswer] =
+    useState("");
 
   return (
+
     <div
       style={{
         minHeight: "100vh",
-        background: "#0F172A",
-        padding: "30px",
+        background:
+          "linear-gradient(to bottom right, #0F172A, #1E293B)",
+        padding: "40px",
         color: "white",
       }}
     >
 
-      <div
+      <h1
         style={{
-          marginBottom: "30px",
+          fontSize: "42px",
+          fontWeight: "bold",
+          background:
+            "linear-gradient(to right, #60A5FA, #A78BFA)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
           textAlign: "center",
+          lineHeight: "1.3",
+          paddingBottom: "10px",
         }}
       >
+        AI Mock Interview
+      </h1>
 
-        <h1>AI Mock Interview</h1>
-
-        <p>
-          Practice interviews with AI-powered evaluation.
-        </p>
-
-      </div>
+      <p
+        style={{
+          textAlign: "center",
+          color: "#CBD5E1",
+          marginTop: "10px",
+          fontSize: "16px",
+        }}
+      >
+        Practice interviews with AI-powered evaluation.
+      </p>
 
       <div
         style={{
           display: "flex",
-          gap: "25px",
           justifyContent: "center",
+          gap: "30px",
           flexWrap: "wrap",
+          marginTop: "40px",
         }}
       >
 
@@ -127,9 +66,9 @@ function Interview() {
 
       <div
         style={{
-          marginTop: "30px",
           display: "flex",
           justifyContent: "center",
+          marginTop: "30px",
         }}
       >
 
@@ -139,67 +78,76 @@ function Interview() {
       <div
         style={{
           marginTop: "40px",
-          maxWidth: "800px",
+          maxWidth: "850px",
           marginInline: "auto",
+          background:
+            "rgba(30,41,59,0.7)",
+          padding: "30px",
+          borderRadius: "24px",
+          backdropFilter: "blur(10px)",
         }}
       >
 
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            style={{
-              marginBottom: "20px",
-            }}
-          >
+        <strong
+          style={{
+            color: "#93C5FD",
+            fontSize: "14px",
+          }}
+        >
+          AI INTERVIEWER
+        </strong>
 
-            <strong>
-              {msg.type === "user"
-                ? "YOU"
-                : "AI"}
-            </strong>
-
-            <p>{msg.text}</p>
-
-          </div>
-        ))}
-
-        {loading && (
-          <p>
-            AI is analyzing your response...
-          </p>
-        )}
+        <p
+          style={{
+            background:
+              "rgba(15,23,42,0.85)",
+            padding: "18px",
+            borderRadius: "18px",
+            marginTop: "10px",
+          }}
+        >
+          Tell me about yourself.
+        </p>
 
         <textarea
-          placeholder="Type your answer"
+          placeholder="Type your answer..."
           value={answer}
           onChange={(e) =>
             setAnswer(e.target.value)
           }
           style={{
             width: "100%",
-            minHeight: "120px",
+            minHeight: "140px",
             marginTop: "20px",
-            padding: "16px",
-            borderRadius: "12px",
+            padding: "18px",
+            borderRadius: "18px",
+            border: "none",
+            background:
+              "rgba(15,23,42,0.75)",
+            color: "white",
           }}
         />
 
         <button
-          onClick={sendAnswer}
           style={{
-            marginTop: "16px",
-            padding: "12px 24px",
-            borderRadius: "10px",
+            marginTop: "18px",
+            padding: "14px 28px",
+            borderRadius: "12px",
             border: "none",
             cursor: "pointer",
+            background:
+              "linear-gradient(to right, #3B82F6, #8B5CF6)",
+            color: "white",
+            fontWeight: "bold",
           }}
         >
-          Submit
+          Submit Answer
         </button>
 
       </div>
 
     </div>
+
   );
 }
 
