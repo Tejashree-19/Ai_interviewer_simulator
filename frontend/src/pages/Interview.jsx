@@ -133,8 +133,7 @@ function Interview() {
         }}
       >
 
-        <VoiceRecorder />
-
+      <VoiceRecorder setAnswer={setAnswer} />
       </div>
 
       <div

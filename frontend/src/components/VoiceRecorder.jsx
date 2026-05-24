@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 
-function VoiceRecorder() {
+function VoiceRecorder({ setAnswer }) {
 
   const [transcript, setTranscript] =
     useState("");
@@ -8,49 +8,67 @@ function VoiceRecorder() {
   const [listening, setListening] =
     useState(false);
 
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  const recognition =
-    new SpeechRecognition();
-
-  recognition.continuous = true;
-
-  recognition.interimResults = true;
-
-  recognition.onresult = (event) => {
-
-    let currentTranscript = "";
-
-    for (
-      let i = 0;
-      i < event.results.length;
-      i++
-    ) {
-
-      currentTranscript +=
-        event.results[i][0].transcript;
-
-    }
-
-    setTranscript(currentTranscript);
-  };
+  const recognitionRef = useRef(null);
 
   const startListening = () => {
 
+    const SpeechRecognition =
+      window.SpeechRecognition ||
+      window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+
+      alert(
+        "Speech Recognition not supported"
+      );
+
+      return;
+    }
+
+    const recognition =
+      new SpeechRecognition();
+
+    recognition.continuous = true;
+
+    recognition.interimResults = true;
+
+    recognition.onresult = (event) => {
+
+      let currentTranscript = "";
+
+      for (
+        let i = 0;
+        i < event.results.length;
+        i++
+      ) {
+
+        currentTranscript +=
+          event.results[i][0].transcript;
+
+      }
+
+      setTranscript(currentTranscript);
+
+      setAnswer(currentTranscript);
+    };
+
     recognition.start();
 
-    setListening(true);
+    recognitionRef.current =
+      recognition;
 
+    setListening(true);
   };
 
   const stopListening = () => {
 
-    recognition.stop();
+    if (recognitionRef.current) {
+
+      recognitionRef.current.stop();
+
+    }
 
     setListening(false);
-
   };
 
   return (
@@ -64,7 +82,8 @@ function VoiceRecorder() {
         width: "420px",
         marginTop: "20px",
         border: "1px solid #334155",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+        boxShadow:
+          "0 4px 12px rgba(0,0,0,0.25)",
       }}
     >
 
@@ -77,19 +96,20 @@ function VoiceRecorder() {
       >
         Speech Recognition
       </h2>
+
       {listening && (
 
-  <p
-    style={{
-      color: "#22C55E",
-      fontWeight: "bold",
-      marginBottom: "10px",
-    }}
-  >
-    🎤 Listening...
-  </p>
+        <p
+          style={{
+            color: "#22C55E",
+            fontWeight: "bold",
+            marginBottom: "10px",
+          }}
+        >
+          🎤 Listening...
+        </p>
 
-)}
+      )}
 
       {!listening ? (
 
