@@ -112,9 +112,9 @@ def evaluate_interview(session_id: int):
                 )
     )
 
-return {
-    "focus_score": focus,
-    "confidence_score": confidence,
-    "communication_score": communication,
-    "overall_feedback": f"Evaluated using {len(answers)} answers"
-}
+    return {
+           "focus_score": focus,
+           "confidence_score": confidence,
+           "communication_score": communication,
+           "overall_feedback": f"Evaluated using {len(answers)} answers"
+ }
