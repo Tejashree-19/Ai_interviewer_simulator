@@ -101,11 +101,20 @@ def evaluate_interview(session_id: int):
     )
 
     communication = min(100, total_words)
+   
+    focus = max(40, 100 - (answers.count("idk") * 15))
 
-    return {
-        "focus_score": 75,
-        "confidence_score": 70,
-        "communication_score": communication,
-        "overall_feedback":
-        f"Evaluated using {len(answers)} answers"
-    }
+    confidence = max(
+          40,
+          100 - sum(
+                 10 for a in answers
+                 if len(a.split()) < 3
+                )
+    )
+
+return {
+    "focus_score": focus,
+    "confidence_score": confidence,
+    "communication_score": communication,
+    "overall_feedback": f"Evaluated using {len(answers)} answers"
+}

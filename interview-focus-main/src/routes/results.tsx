@@ -64,7 +64,10 @@ const [animatedScore, setAnimatedScore] = useState(0);
 
       setResult(res.data);
 
-      console.log("Evaluation:", res.data);
+      console.log(
+        "Evaluation:",
+        JSON.stringify(res.data, null, 2)
+      );
     } catch (error) {
       console.error("Evaluate error:", error);
     }
