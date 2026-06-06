@@ -112,9 +112,18 @@ def evaluate_interview(session_id: int):
                 )
     )
 
+    if communication < 30:
+    	feedback = "Your answers were very short. Try explaining concepts with more detail and examples."
+    elif focus < 60:
+    	feedback = "Stay focused on the question and avoid vague responses."
+    elif confidence < 60:
+    	feedback = "Answer with more confidence and provide stronger technical explanations."
+    else:
+    	feedback = "Strong communication and technical confidence."
+
     return {
-           "focus_score": focus,
-           "confidence_score": confidence,
-           "communication_score": communication,
-           "overall_feedback": f"Evaluated using {len(answers)} answers"
- }
+        "focus_score": focus,
+        "confidence_score": confidence,
+        "communication_score": communication,
+        "overall_feedback": feedback
+    }
