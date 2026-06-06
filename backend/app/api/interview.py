@@ -40,26 +40,21 @@ def create_session():
         "question": first_question
     }
 
-
 @router.post("/upload-video")
 async def upload_video(file: UploadFile = File(...)):
-
     try:
+        print("VIDEO RECEIVED:", file.filename)
 
         contents = await file.read()
 
         with open(f"uploaded_{file.filename}", "wb") as f:
             f.write(contents)
 
-        return {
-            "message": "uploaded successfully"
-        }
+        return {"message": "uploaded successfully"}
 
-    except Exception:
-
-        return {
-            "message": "upload failed"
-        }
+    except Exception as e:
+        print(e)
+        return {"message": "upload failed"}
     
 
 class AnswerRequest(BaseModel):
@@ -92,13 +87,25 @@ def process_answer(data: AnswerRequest):
     }
 
 
-@router.get("/evaluate")
-def evaluate_interview():
+@router.get("/evaluate/{session_id}")
+def evaluate_interview(session_id: int):
+
+    if session_id not in sessions:
+        return {"error": "Invalid session"}
+
+    answers = sessions[session_id]["answers"]
+
+    total_words = sum(
+        len(answer.split())
+        for answer in answers
+    )
+
+    communication = min(100, total_words)
 
     return {
-        "focus_score": 84,
-        "confidence_score": 79,
-        "communication_score": 88,
+        "focus_score": 75,
+        "confidence_score": 70,
+        "communication_score": communication,
         "overall_feedback":
-        "Strong communication and technical confidence."
+        f"Evaluated using {len(answers)} answers"
     }
