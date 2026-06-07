@@ -64,18 +64,25 @@ class AnswerRequest(BaseModel):
 
 @router.post("/answer")
 def process_answer(data: AnswerRequest):
-
     if data.session_id not in sessions:
-
         return {
             "error": "Invalid session"
         }
 
-    next_q = generate_question(data.answer)
-
     sessions[data.session_id]["answers"].append(
         data.answer
     )
+
+    answer_count = len(
+        sessions[data.session_id]["answers"]
+    )
+
+    if answer_count >= 7:
+        return {
+            "interview_complete": True
+        }
+
+    next_q = generate_question(data.answer)
 
     sessions[data.session_id]["questions"].append(
         next_q
@@ -85,7 +92,6 @@ def process_answer(data: AnswerRequest):
         "next_question": next_q,
         "interview_complete": False
     }
-
 
 @router.get("/evaluate/{session_id}")
 def evaluate_interview(session_id: int):
