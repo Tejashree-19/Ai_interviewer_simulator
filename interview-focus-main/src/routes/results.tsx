@@ -4,7 +4,6 @@ import { ArrowLeft, Download, Share2, Sparkles, CheckCircle2, AlertCircle, Arrow
 import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { Panel, Progress, StatusBadge, CircularProgress } from "@/components/ui-kit";
-
 export const Route = createFileRoute("/results")({
   head: () => ({
     meta: [
@@ -15,10 +14,6 @@ export const Route = createFileRoute("/results")({
   component: Results,
 });
 
-
-const strengths = ["Communication", "Structured thinking", "Strong use of metrics"];
-const improvements = ["Conciseness", "Technical depth", "Reduce filler words"];
-
 function Results() {
   
   const [result, setResult] = useState({
@@ -26,7 +21,37 @@ function Results() {
   confidence_score: 79,
   communication_score: 88,
   overall_feedback: "",
+  question_count: 0,
 });
+
+const strengths: string[] = [];
+
+if (result.communication_score >= 70)
+  strengths.push("Good communication");
+
+if (result.confidence_score >= 70)
+  strengths.push("Confident responses");
+
+if (result.focus_score >= 70)
+  strengths.push("Stayed focused during the interview");
+
+if (strengths.length === 0)
+  strengths.push("Completed the interview successfully");
+
+const improvements: string[] = [];
+
+if (result.communication_score < 70)
+  improvements.push("Improve communication skills");
+
+if (result.confidence_score < 70)
+  improvements.push("Answer with more confidence");
+
+if (result.focus_score < 70)
+  improvements.push("Stay focused on the question");
+
+if (result.communication_score < 30)
+  improvements.push("Give longer and more detailed answers");
+
 
 const scores = [
   {
@@ -42,6 +67,7 @@ const scores = [
     value: result.focus_score,
   },
 ];
+
 
 const overall = Math.round(
   (result.focus_score +
@@ -77,18 +103,26 @@ const [animatedScore, setAnimatedScore] = useState(0);
 }, []);
 
   useEffect(() => {
-    const start = performance.now();
-    const dur = 1200;
-    let raf = 0;
-    const tick = (t: number) => {
-      const p = Math.min(1, (t - start) / dur);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setAnimatedScore(Math.round(overall * eased));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+  const start = performance.now();
+  const dur = 1200;
+  let raf = 0;
+
+  const tick = (t: number) => {
+    const p = Math.min(1, (t - start) / dur);
+    const eased = 1 - Math.pow(1 - p, 3);
+
+    setAnimatedScore(
+      Math.round(overall * eased)
+    );
+
+    if (p < 1)
+      raf = requestAnimationFrame(tick);
+  };
+
+  raf = requestAnimationFrame(tick);
+
+  return () => cancelAnimationFrame(raf);
+}, [overall]);
 
   return (
     <AppShell>
@@ -102,9 +136,9 @@ const [animatedScore, setAnimatedScore] = useState(0);
           </Link>
           <div>
             <h1 className="text-xl font-semibold tracking-tight">Session report</h1>
-            <p className="text-xs text-muted-foreground">
-              Frontend Engineer · Senior · 42 min · 8 questions
-            </p>
+	    <p className="text-xs text-muted-foreground">
+		Interview completed · {result.question_count} questions
+	    </p>
           </div>
         </div>
         <div className="flex items-center gap-2">

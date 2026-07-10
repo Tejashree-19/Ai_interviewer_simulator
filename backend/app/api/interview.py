@@ -128,8 +128,9 @@ def evaluate_interview(session_id: int):
     	feedback = "Strong communication and technical confidence."
 
     return {
-        "focus_score": focus,
-        "confidence_score": confidence,
-        "communication_score": communication,
-        "overall_feedback": feedback
-    }
+    "focus_score": focus,
+    "confidence_score": confidence,
+    "communication_score": communication,
+    "overall_feedback": feedback,
+    "question_count": len(answers)
+}
