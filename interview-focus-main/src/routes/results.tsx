@@ -75,6 +75,30 @@ const overall = Math.round(
     result.communication_score) / 3
 );
 
+let recommendation = "System Design Fundamentals";
+let duration = "30 minutes";
+let level = "Intermediate";
+
+if (
+  result.communication_score <= result.confidence_score &&
+  result.communication_score <= result.focus_score
+) {
+  recommendation = "Communication Skills";
+  duration = "20 minutes";
+  level = "Beginner";
+} else if (
+  result.confidence_score <= result.communication_score &&
+  result.confidence_score <= result.focus_score
+) {
+  recommendation = "Behavioral Interview Practice";
+  duration = "25 minutes";
+  level = "Intermediate";
+} else {
+  recommendation = "System Design Fundamentals";
+  duration = "30 minutes";
+  level = "Intermediate";
+}
+
 const [animatedScore, setAnimatedScore] = useState(0);
 
   useEffect(() => {
@@ -224,13 +248,15 @@ const [animatedScore, setAnimatedScore] = useState(0);
             <div className="relative flex flex-wrap items-center justify-between gap-4">
               <div className="min-w-0">
                 <div className="text-xs uppercase tracking-wide text-muted-foreground">Recommended next practice session</div>
-                <div className="mt-1 text-lg font-semibold">System Design Fundamentals</div>
+                <div className="mt-1 text-lg font-semibold">
+		  {recommendation}
+		</div>
                 <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
-                    <Clock className="h-3.5 w-3.5" /> 30 minutes
+                    <Clock className="h-3.5 w-3.5" /> {duration}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
-                    <BarChart3 className="h-3.5 w-3.5" /> Intermediate
+		  <BarChart3 className="h-3.5 w-3.5" /> {level}
                   </span>
                 </div>
               </div>
