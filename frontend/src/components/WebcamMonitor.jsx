@@ -59,7 +59,8 @@ function WebcamMonitor() {
 
     <div
       style={{
-        width: "340px",
+        width: "100%",
+maxWidth: "340px",
         padding: "24px",
         borderRadius: "24px",
         background:
@@ -76,7 +77,7 @@ function WebcamMonitor() {
       <h2
         style={{
           marginBottom: "18px",
-          fontSize: "24px",
+          fontSize: "clamp(20px, 5vw, 24px)",
           fontWeight: "bold",
           background:
             "linear-gradient(to right, #60A5FA, #A78BFA)",
@@ -92,7 +93,7 @@ function WebcamMonitor() {
         autoPlay
         muted
         width="100%"
-        height="240"
+        height="220"
         style={{
           borderRadius: "16px",
           background: "black",
