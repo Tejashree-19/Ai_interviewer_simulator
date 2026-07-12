@@ -104,12 +104,14 @@ const [animatedScore, setAnimatedScore] = useState(0);
   useEffect(() => {
   async function loadResults() {
     try {
-	const sessionId =
-	localStorage.getItem("session_id");
+      const sessionId = localStorage.getItem("session_id");
 
-	const res = await api.get(
-	`/evaluate/${sessionId}`
-	);
+      if (!sessionId) {
+         console.error("No session_id found in localStorage");
+      return;
+    }
+
+const res = await api.get(`/evaluate/${sessionId}`); 
 
 
       setResult(res.data);

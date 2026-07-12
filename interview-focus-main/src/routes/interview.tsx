@@ -262,8 +262,15 @@ if (nextCount >= 8) {
 
   await uploadRecording();
 
+  console.log(
+     "session_id before results:",
+     localStorage.getItem("session_id")
+  );
+
   navigate({ to: "/results" });
+
   return;
+
 }
 
 setQuestionCount(nextCount);
