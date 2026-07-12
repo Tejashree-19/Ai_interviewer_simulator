@@ -47,44 +47,35 @@ def fallback_question(answer):
 
 
 def generate_question(answer: str) -> str:
-
     prompt = f"""
     You are a senior technical interviewer.
-
-    Your job is to conduct a realistic technical interview.
-
-    Rules:
-    - Ask professional follow-up questions
-    - Focus on technical depth
-    - Ask concise but intelligent questions
-    - Adapt based on candidate answers
-    - Sound like a real interviewer
 
     Candidate Answer:
     {answer}
 
-    Generate ONE technical follow-up interview question.
+    Ask ONE technical follow-up interview question.
     """
 
-    try:
+    print("generate_question() called")
+    print("Candidate answer:", answer)
 
-        response = model.generate_content(
-            prompt
-        )
+    try:
+        response = model.generate_content(prompt)
+
+        print("Gemini response object:", response)
+        print("Gemini text:", response.text)
 
         return response.text
 
-    except Exception:
-
-
+    except Exception as e:
+        print("\n========== GEMINI ERROR ==========")
+        print(repr(e))
+        print("==================================\n")
         return fallback_question(answer)
 
-	
 def evaluate_answer(answer: str):
-
     prompt = f"""
     You are a senior technical interviewer.
-
     Evaluate the following candidate answer.
 
     Candidate Answer:
@@ -100,24 +91,22 @@ def evaluate_answer(answer: str):
     """
 
     try:
-
-        response = model.generate_content(
-            prompt
-        )
-
+        response = model.generate_content(prompt)
         return response.text
 
-    except Exception:
+    except Exception as e:
+        print("\n========== GEMINI EVALUATION ERROR ==========")
+        print(e)
+        print("=============================================\n")
 
         return """
-        Score: 7/10
+Score: 7/10
+Strengths:
+Good understanding of backend API development.
 
-        Strengths:
-        Good understanding of backend API development.
+Weaknesses:
+Could explain scalability and authentication better.
 
-        Weaknesses:
-        Could explain scalability and authentication better.
-
-        Improvement Tips:
-        Practice async FastAPI concepts and database optimization.
-        """
+Improvement Tips:
+Practice async FastAPI concepts and database optimization.
+"""
